@@ -39,7 +39,7 @@ normalized_padded_vectors = data_preprocessor.normalize_padded_vectors(padded_in
 quantum_classifier = QuantumClassifier(normalized_padded_vectors, data_preprocessor.number_of_qubits)
 angles = quantum_classifier.get_angles_for_state_preparation()
 quantum_classifier.generate_state_preparation_circuit()
-# print(angles)
+print(quantum_classifier.state_preparation_circuit)
 
 # binary and gray bitwise dot product code
 # b = 5

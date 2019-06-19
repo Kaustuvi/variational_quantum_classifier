@@ -1,6 +1,6 @@
 from .data_preprocessor import DataPreprocessor
 from math import log2
-from cirq import Circuit, InsertStrategy, GridQubit, Ry, CNOT, Simulator
+from cirq import Circuit, InsertStrategy, GridQubit, Ry, CNOT
 from sympy.combinatorics.graycode import GrayCode
 import numpy as np
 
@@ -12,6 +12,7 @@ class QuantumClassifier:
         self.qubits = [GridQubit(i, j) for j in range(
             self.number_of_qubits) for i in range(self.number_of_qubits)]
         self.rotation_angles = None
+        self.state_preparation_circuit = None
 
     def get_angles_for_state_preparation(self):
         self.rotation_angles = [self.get_angles_from_data(
@@ -40,10 +41,7 @@ class QuantumClassifier:
                             gray_code_list[(l+1) % len(angles)], gray_code_list[l % len(angles)])
                         state_preparation_circuit += self.get_cnot_circuit(
                             self.qubits[cnot_position[0]], self.qubits[qubit_index])
-        sim = Simulator()
-        res = sim.simulate(state_preparation_circuit)
-        print("ckt", state_preparation_circuit)
-        print("res", res.final_state)
+        self.state_preparation_circuit = state_preparation_circuit
 
     @staticmethod
     def get_angles_from_data(preprocessed_data, number_of_qubits):
