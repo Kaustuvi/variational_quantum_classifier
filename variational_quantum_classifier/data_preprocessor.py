@@ -7,7 +7,6 @@ class DataPreprocessor:
         self.input_vectors = self.reshape_input_vectors(input_vectors)
         self.number_of_qubits = ceil(log2(len(self.input_vectors[0]))) if len(
             self.input_vectors.shape) == 2 else ceil(log2(len(self.input_vectors)))
-        self.normalized_padded_vectors = None
 
     def reshape_input_vectors(self, input_vectors):
         if len(input_vectors.shape) == 2:
