@@ -1,7 +1,7 @@
 from cirq import Circuit, GridQubit, Ry, CNOT, InsertStrategy, Simulator
 import numpy as np
 from variational_quantum_classifier.data_preprocessor import DataPreprocessor
-from variational_quantum_classifier.quantum_classifier import QuantumClassifier
+from variational_quantum_classifier.state_preparation import StatePreparation
 
 size = 2
 qubits = [GridQubit(i, j) for i in range(size) for j in range(size)]
@@ -36,7 +36,7 @@ print(X)
 data_preprocessor = DataPreprocessor(X)
 padded_input_vectors = data_preprocessor.pad_input_vectors()
 normalized_padded_vectors = data_preprocessor.normalize_padded_vectors(padded_input_vectors)
-quantum_classifier = QuantumClassifier(normalized_padded_vectors, data_preprocessor.number_of_qubits)
+quantum_classifier = StatePreparation(normalized_padded_vectors, data_preprocessor.number_of_qubits)
 angles = quantum_classifier.get_angles_for_state_preparation()
 quantum_classifier.generate_state_preparation_circuit()
 print(quantum_classifier.state_preparation_circuit)

@@ -5,7 +5,7 @@ from sympy.combinatorics.graycode import GrayCode
 import numpy as np
 
 
-class QuantumClassifier:
+class StatePreparation:
     def __init__(self, preprocessed_data, number_of_qubits):
         self.preprocessed_data = preprocessed_data
         self.number_of_qubits = number_of_qubits
@@ -30,14 +30,14 @@ class QuantumClassifier:
                     state_preparation_circuit.append(
                         [RY(self.qubits[qubit_index])], strategy=InsertStrategy.EARLIEST)
                 else:
-                    gray_code_list = QuantumClassifier.generate_gray_code(
+                    gray_code_list = StatePreparation.generate_gray_code(
                         qubit_index)
                     for qubit_angle in angles:
                         RY = Ry(qubit_angle)
                         state_preparation_circuit.append(
                             [RY(self.qubits[qubit_index])], strategy=InsertStrategy.EARLIEST)
                         l = angles.index(qubit_angle)
-                        cnot_position = QuantumClassifier.find_cnot_position(
+                        cnot_position = StatePreparation.find_cnot_position(
                             gray_code_list[(l+1) % len(angles)], gray_code_list[l % len(angles)])
                         state_preparation_circuit += self.get_cnot_circuit(
                             self.qubits[cnot_position[0]], self.qubits[qubit_index])
@@ -59,7 +59,7 @@ class QuantumClassifier:
                     alpha_denominator += preprocessed_data[denominator_index]**2
                 alpha_jk.append(
                     2 * np.arcsin(np.sqrt(alpha_numerator) / np.sqrt(alpha_denominator)))
-            M = QuantumClassifier.get_multiplication_matrix(j+1, log2(j+1))
+            M = StatePreparation.get_multiplication_matrix(j+1, log2(j+1))
             rotation_angles.insert(0, list(np.matmul(M, alpha_jk)))
         return rotation_angles
 
