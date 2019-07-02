@@ -2,6 +2,7 @@ from cirq import Circuit, GridQubit, Ry, CNOT, InsertStrategy, Simulator
 import numpy as np
 from variational_quantum_classifier.data_preprocessor import DataPreprocessor
 from variational_quantum_classifier.state_preparation import StatePreparation
+from variational_quantum_classifier.model_circuit import ModelCircuit
 
 size = 2
 qubits = [GridQubit(i, j) for i in range(size) for j in range(size)]
@@ -35,11 +36,20 @@ print(X)
 
 data_preprocessor = DataPreprocessor(X)
 padded_input_vectors = data_preprocessor.pad_input_vectors()
-normalized_padded_vectors = data_preprocessor.normalize_padded_vectors(padded_input_vectors)
-quantum_classifier = StatePreparation(normalized_padded_vectors, data_preprocessor.number_of_qubits)
-angles = quantum_classifier.get_angles_for_state_preparation()
-quantum_classifier.generate_state_preparation_circuit()
-print(quantum_classifier.state_preparation_circuit)
+normalized_padded_vectors = data_preprocessor.normalize_padded_vectors(
+    padded_input_vectors)
+state_preparation = StatePreparation(
+    normalized_padded_vectors, data_preprocessor.number_of_qubits)
+angles = state_preparation.get_angles_for_state_preparation()
+state_preparation_circuit = state_preparation.generate_state_preparation_circuit(
+    angles)
+model_circuit = ModelCircuit(state_preparation_circuit)
+parameterized_model_circuit=model_circuit.get_parameterized_model_circuit()
+# print(list(state_preparation_circuit.all_qubits()))
+print(state_preparation_circuit)
+sim=Simulator()
+res=sim.simulate(state_preparation_circuit)
+print(res.dirac_notation())
 
 # binary and gray bitwise dot product code
 # b = 5
