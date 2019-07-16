@@ -8,13 +8,13 @@ class DataPreprocessor:
         self.number_of_qubits = None
         self.state_preparation_angles = None
 
-    def pad_input_vectors(self):
-        if is_equal_power_of_qubits(len(self.raw_input_data[0]), self.number_of_qubits):
-            return self.raw_input_data
-        padding_width = 2**self.number_of_qubits - len(self.raw_input_data[0])
-        padding_length = len(self.raw_input_data)
+    def pad_input_vectors(self, reshaped_input_vectors):
+        if is_equal_power_of_qubits(len(reshaped_input_vectors[0]), self.number_of_qubits):
+            return reshaped_input_vectors
+        padding_width = 2**self.number_of_qubits - len(reshaped_input_vectors[0])
+        padding_length = len(reshaped_input_vectors)
         padding_constant = 0.3 * np.ones((padding_length, padding_width))
-        return np.c_[self.raw_input_data, padding_constant]
+        return np.c_[reshaped_input_vectors, padding_constant]
 
     def normalize_padded_vectors(self, padded_input_vectors):
         normalization = np.sqrt(np.sum(padded_input_vectors ** 2, -1))
@@ -31,8 +31,8 @@ class DataPreprocessor:
     def preprocess_input_data(self):
         reshaped_input_vectors = self.reshape_input_vectors()
         self.number_of_qubits = self.get_number_of_qubits(reshaped_input_vectors)
-        padded_data=self.pad_input_vectors()
-        preprocessed_input_data=self.normalize_padded_vectors(padded_data)
+        padded_data = self.pad_input_vectors(reshaped_input_vectors)
+        preprocessed_input_data = self.normalize_padded_vectors(padded_data)
         return preprocessed_input_data
 
     def get_angles_for_state_preparation(self, preprocessed_input_data):

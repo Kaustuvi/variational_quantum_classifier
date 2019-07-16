@@ -6,7 +6,7 @@ import math
 class ModelCircuit:
     def __init__(self, qubits):
         self.number_of_qubits = len(qubits)
-        self.range_of_control = find_range_contols(self.number_of_qubits)
+        self.range_of_control = find_range_controls(self.number_of_qubits)
         self.qubits = qubits
         self.parameterized_model_circuit = None
 
@@ -47,5 +47,5 @@ class ModelCircuit:
         return controlled_gate_layer
 
 
-def find_range_contols(number_of_qubits):
-    return [i for i in range(number_of_qubits) if i <= number_of_qubits/2 and math.gcd(i, number_of_qubits) == 1]
+def find_range_controls(number_of_qubits):
+    return [i for i in range(1, number_of_qubits) if i <= number_of_qubits/2 and math.gcd(i, number_of_qubits) == 1]
