@@ -13,28 +13,38 @@ class QuantumClassifierTrainer():
         self.number_of_qubits = number_of_qubits
         self.samples = samples
         self.qubits = [LineQubit(i) for i in range(self.number_of_qubits)]
-        self.minimizer_kwargs = {'method': 'Nelder-Mead', 'options': {'disp': True, 'ftol': 1.0e-2, 'xtol': 1.0e-2}}
+        self.minimizer_kwargs = {'method': 'Nelder-Mead', 'options': {'disp': False, 'ftol': 1.0e-2, 'xtol': 1.0e-2}}
+        self.current_cost = None
+        self.current_accuracy = None
 
     def find_optimal_parameters(self, state_preparation_angles, original_labels, initial_classifier_parameters):
 
         def cost_function(classifier_parameters):
             predicted_labels = self.calculate_predictions(state_preparation_angles, classifier_parameters)
+            current_predictions = [np.sign(prediction) for prediction in predicted_labels]
+            self.current_cost = self.calculate_square_loss(original_labels, predicted_labels)
+            self.current_accuracy = self.calculate_accuracy(original_labels, current_predictions)
             return self.calculate_square_loss(original_labels, predicted_labels)
 
+        def print_current_iteration(iteration_variables):
+            print("\tCost: {:6.3f} \tOverall Accuracy: {:6.3f}".format(self.current_cost, self.current_accuracy))
+        
+        self.minimizer_kwargs['callback'] = print_current_iteration
         args = [cost_function, initial_classifier_parameters]
         result = optimize.minimize(*args, **self.minimizer_kwargs)
         return result.x
 
-    def calculate_quantum_classifier_accuracy(self, validation_angles, validation_labels, trained_classifier_parameters):
+    def calculate_validation_label_accuracy(self, validation_angles, validation_labels, trained_classifier_parameters):
         validation_predictions = self.calculate_predictions(validation_angles, trained_classifier_parameters)
-        validation_predictions = [np.sign(prediction.real) for prediction in validation_predictions]
+        validation_predictions = [np.sign(prediction) for prediction in validation_predictions]
+        self.print_accuracy_table(validation_labels, validation_predictions)
         classifier_accuracy = self.calculate_accuracy(validation_labels, validation_predictions)
         return classifier_accuracy
 
     def calculate_predictions(self, state_preparation_angles, classifier_parameters):
         gate_parameters = classifier_parameters[0:6]
         bias = classifier_parameters[-1]
-        pauli_z_expectations = [self.find_pauli_z_expectation(angle, gate_parameters)+bias for angle in state_preparation_angles]
+        pauli_z_expectations = [self.find_pauli_z_expectation(angle, gate_parameters).real+bias for angle in state_preparation_angles]
         return pauli_z_expectations
 
     def find_pauli_z_expectation(self, angle, gate_parameters):
@@ -68,14 +78,19 @@ class QuantumClassifierTrainer():
         for label, prediction in zip(original_labels, predicted_labels):
             square_loss = square_loss+(label-prediction)**2
         square_loss = square_loss/len(original_labels)
-        return square_loss.real
+        return square_loss
 
     def calculate_accuracy(self, original_labels, predicted_labels):
         accuracy = 0
-        for label, prediction in zip(original_labels, predicted_labels):
+        for label, prediction in zip(original_labels, predicted_labels):  
             if abs(label - prediction) < 1e-5:
                 accuracy = accuracy + 1
         accuracy = accuracy / len(original_labels)
         return accuracy
 
+    def print_accuracy_table(self, original_labels, predicted_labels):
+        print("\n\tAccuracy of each predicted label for validation data -->\n")
+        print("\tOriginal Label\t\tPredicted Label\t\tAccuracy")
+        for label, prediction in zip(original_labels, predicted_labels):            
+            print("\t{:4.1f}\t{:20.1f}\t{:20.1f}".format(label, prediction, abs(label/prediction)))
 
