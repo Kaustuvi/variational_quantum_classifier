@@ -1,4 +1,3 @@
-from cirq import Pauli, pauli_string_expectation, PauliString, LineQubit, Circuit, X, Simulator, measure,H, I, CNOT, unitary, Z
 import time
 import numpy as np
 from variational_quantum_classifier.variational_quantum_classifier import VariationalQuantumClassifier
