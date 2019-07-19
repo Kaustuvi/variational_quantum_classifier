@@ -1,4 +1,4 @@
-from math import ceil, floor, log2
+from math import ceil, log2
 import numpy as np
 
 
@@ -36,8 +36,7 @@ class DataPreprocessor:
         return preprocessed_input_data
 
     def get_angles_for_state_preparation(self, preprocessed_input_data):
-        self.state_preparation_angles = [self.get_angles_from_data(
-            data, self.number_of_qubits) for data in preprocessed_input_data]
+        self.state_preparation_angles = [self.get_angles_from_data(data, self.number_of_qubits) for data in preprocessed_input_data]
         return self.state_preparation_angles, self.number_of_qubits
 
     @staticmethod
@@ -60,8 +59,10 @@ class DataPreprocessor:
             rotation_angles.insert(0, list(np.matmul(M, alpha_jk)))
         return rotation_angles
 
+
 def is_equal_power_of_qubits(dimension, number_of_qubits):
     return dimension == 2**number_of_qubits
+
 
 def get_multiplication_matrix(size, number_of_controls):
     M = [[0 for i in range(size)] for j in range(size)]

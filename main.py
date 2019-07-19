@@ -3,8 +3,8 @@ import numpy as np
 from variational_quantum_classifier.variational_quantum_classifier import VariationalQuantumClassifier
 
 input_data = np.loadtxt("./data/iris_data.txt")
-raw_features = input_data[:,0:2]
-original_labels = input_data[:,-1]
+raw_features = input_data[:, 0:2]
+original_labels = input_data[:, -1]
 
 vqc = VariationalQuantumClassifier(raw_features, samples=10000)
 start_time = time.time()

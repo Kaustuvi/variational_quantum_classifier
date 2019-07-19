@@ -1,6 +1,6 @@
-from cirq import Circuit, SingleQubitMatrixGate, InsertStrategy, Rx, CZPowGate, CZ
-import numpy as np
 import math
+import numpy as np
+from cirq import Circuit, SingleQubitMatrixGate, InsertStrategy, Rx, CZPowGate
 
 
 class ModelCircuit:
@@ -42,8 +42,7 @@ class ModelCircuit:
             RX = Rx(rot_param)
             CPhase = CZPowGate(exponent=controlled_phase_param/np.pi)
             controlled_gate_layer.append([RX(self.qubits[k])])
-            controlled_gate_layer.append([CPhase(self.qubits[k*r % self.number_of_qubits], self.qubits[(
-                k*r-r) % self.number_of_qubits])])
+            controlled_gate_layer.append([CPhase(self.qubits[k*r % self.number_of_qubits], self.qubits[(k*r-r) % self.number_of_qubits])])
         return controlled_gate_layer
 
 

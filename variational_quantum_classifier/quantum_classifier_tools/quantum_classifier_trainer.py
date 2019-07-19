@@ -1,4 +1,3 @@
-import funcsigs
 import numpy as np
 
 from scipy import optimize
@@ -48,7 +47,7 @@ class QuantumClassifierTrainer():
         return pauli_z_expectations
 
     def find_pauli_z_expectation(self, angle, gate_parameters):
-        variational_classifier_circuit = self.variational_quantum_classifier_circuit(angle, gate_parameters)        
+        variational_classifier_circuit = self.variational_quantum_classifier_circuit(angle, gate_parameters)
         if self.samples is None:
             return self.derive_expectation_from_wavefunction(variational_classifier_circuit)
         else:
@@ -89,7 +88,7 @@ class QuantumClassifierTrainer():
 
     def calculate_accuracy(self, original_labels, predicted_labels):
         accuracy = 0
-        for label, prediction in zip(original_labels, predicted_labels):  
+        for label, prediction in zip(original_labels, predicted_labels):
             if abs(label - prediction) < 1e-5:
                 accuracy = accuracy + 1
         accuracy = accuracy / len(original_labels)
@@ -98,6 +97,6 @@ class QuantumClassifierTrainer():
     def print_accuracy_table(self, original_labels, predicted_labels):
         print("\n\tAccuracy of each predicted label for validation data -->\n")
         print("\tOriginal Label\t\tPredicted Label\t\tAccuracy")
-        for label, prediction in zip(original_labels, predicted_labels):            
+        for label, prediction in zip(original_labels, predicted_labels):
             print("\t{:4.1f}\t{:20.1f}\t{:20.1f}".format(label, prediction, abs(label/prediction)))
 

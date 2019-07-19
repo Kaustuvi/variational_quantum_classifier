@@ -1,7 +1,5 @@
-from math import log2
-from cirq import Circuit, InsertStrategy, GridQubit, Ry, CNOT, LineQubit
+from cirq import Circuit, InsertStrategy, Ry, CNOT
 from sympy.combinatorics.graycode import GrayCode
-import numpy as np
 
 
 class StatePreparation:
@@ -31,13 +29,13 @@ class StatePreparation:
     @staticmethod
     def get_cnot_circuit(control_line, target_line):
         cnot_circuit = Circuit()
-        cnot_circuit.append([CNOT(control_line, target_line)],
-                            strategy=InsertStrategy.EARLIEST)
+        cnot_circuit.append([CNOT(control_line, target_line)], strategy=InsertStrategy.EARLIEST)
         return cnot_circuit
 
     @staticmethod
     def find_cnot_position(curr_gray_code, prev_gray_code):
         return [i for i in range(len(curr_gray_code)) if curr_gray_code[i] != prev_gray_code[i]]
+
 
 def generate_gray_code(number_of_controls):
     return list(GrayCode(number_of_controls).generate_gray())
