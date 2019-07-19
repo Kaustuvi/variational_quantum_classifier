@@ -36,8 +36,8 @@ class VariationalQuantumClassifier():
 
     def train_quantum_classifier(self, training_angles, training_labels):
         initial_classifier_parameters = [np.random.uniform(0, np.pi)]*6
-        classifier_parameters = self.qct_inst.find_optimal_parameters(training_angles, training_labels, initial_classifier_parameters)
-        return classifier_parameters
+        classifier_parameters, overall_cost = self.qct_inst.find_optimal_parameters(training_angles, training_labels, initial_classifier_parameters)
+        return classifier_parameters, overall_cost
 
     def validate_trained_classifier(self, validation_angles, validation_labels, trained_classifier_parameters):
         classifier_accuracy = self.qct_inst.calculate_validation_label_accuracy(validation_angles, validation_labels, trained_classifier_parameters)
@@ -52,6 +52,7 @@ class VariationalQuantumClassifier():
 
     def plot_decision_regions(self, input_data, original_labels, predicted_labels):
         plt.figure()
+        plt.title("Plot of Training and Validation Data on Decision Regions", pad=15.5)
         cm = plt.cm.get_cmap('RdBu')
         cnt = plt.contourf(self.x_axis, self.y_axis, predicted_labels, levels=np.arange(-1, 1.1, 0.1), cmap=cm, alpha=.8, extend='both')
         plt.contour(self.x_axis, self.y_axis, predicted_labels, levels=[0.0], colors=('black',), linestyles=('--',), linewidths=(0.8,))

@@ -32,7 +32,7 @@ class QuantumClassifierTrainer():
         self.minimizer_kwargs['callback'] = print_current_iteration
         args = [cost_function, initial_classifier_parameters]
         result = optimize.minimize(*args, **self.minimizer_kwargs)
-        return result.x
+        return result.x, result.fun
 
     def calculate_validation_label_accuracy(self, validation_angles, validation_labels, trained_classifier_parameters):
         validation_predictions = self.calculate_predictions(validation_angles, trained_classifier_parameters)
@@ -52,9 +52,8 @@ class QuantumClassifierTrainer():
         if self.samples is None:
             return self.derive_expectation_from_wavefunction(variational_classifier_circuit)
         else:
-            #Todo
             variational_classifier_circuit.append([measure(self.qubits[0], key="q0")])
-            return None
+            return self.derive_expectation_from_samples(variational_classifier_circuit)
 
     def variational_quantum_classifier_circuit(self, angle, gate_parameters):
         state_preparation = StatePreparation(self.qubits)
@@ -72,6 +71,14 @@ class QuantumClassifierTrainer():
         pauli_z_operator = PauliString({self.qubits[0]: Pauli.by_index(2)}, 1)
         pauli_expectation = pauli_string_expectation(pauli_z_operator)
         return pauli_expectation.value_derived_from_wavefunction(classifier_circuit_state, {self.qubits[0]: 0})
+
+    def derive_expectation_from_samples(self, variational_classifier_circuit):
+        simulator = Simulator()
+        simulation_result = simulator.run(variational_classifier_circuit, repetitions=self.samples)
+        classifier_circuit_state = simulation_result.measurements["q0"]
+        pauli_z_operator = PauliString({self.qubits[0]: Pauli.by_index(2)}, 1)
+        pauli_expectation = pauli_string_expectation(pauli_z_operator, num_samples=self.samples)
+        return pauli_expectation.value_derived_from_samples(classifier_circuit_state)
 
     def calculate_square_loss(self, original_labels, predicted_labels):
         square_loss = 0
